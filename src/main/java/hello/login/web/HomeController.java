@@ -2,8 +2,10 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.login.SessionConst;
 import hello.login.web.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -39,12 +41,28 @@ public class HomeController {
         return "homeLogin";
     }
 
-    @GetMapping("/")
+//    @GetMapping("/")
     public String homeLoginV2(HttpServletRequest request, Model model) {
         Member loginMember = (Member)sessionManager.getSession(request);
         if (loginMember == null) {
             return "home";
         }
+        model.addAttribute("member", loginMember);
+        return "homeLogin";
+    }
+
+    @GetMapping("/")
+    public String homeLoginV3(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return "home";
+        }
+
+        Member loginMember = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (loginMember == null) {
+            return "home";
+        }
+
         model.addAttribute("member", loginMember);
         return "homeLogin";
     }
