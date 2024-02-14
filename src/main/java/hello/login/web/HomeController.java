@@ -2,6 +2,8 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.session.SessionManager;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -16,19 +18,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HomeController {
 
     private final MemberRepository memberRepository;
+    private final SessionManager sessionManager;
 
 //    @GetMapping("/")
     public String home() {
         return "home";
     }
 
-    @GetMapping("/")
+//    @GetMapping("/")
     public String homeLogin(@CookieValue(name = "memberId", required = false)Long id, Model model) {
         if (id == null) {
             return "home";
         }
 
         Member loginMember = memberRepository.findById(id);
+        if (loginMember == null) {
+            return "home";
+        }
+        model.addAttribute("member", loginMember);
+        return "homeLogin";
+    }
+
+    @GetMapping("/")
+    public String homeLoginV2(HttpServletRequest request, Model model) {
+        Member loginMember = (Member)sessionManager.getSession(request);
         if (loginMember == null) {
             return "home";
         }
