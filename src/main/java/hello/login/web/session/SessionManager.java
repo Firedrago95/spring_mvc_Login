@@ -1,4 +1,4 @@
-package hello.login.web;
+package hello.login.web.session;
 
 import hello.login.domain.member.Member;
 import jakarta.servlet.http.Cookie;
