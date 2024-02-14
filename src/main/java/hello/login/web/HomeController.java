@@ -2,8 +2,10 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.session.SessionConst;
 import hello.login.web.session.SessionManager;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +43,7 @@ public class HomeController {
         return "loginHome";
     }
     //직접만든 세션 적용
-    @GetMapping("/")
+//    @GetMapping("/")
     public String homeLoginV2(HttpServletRequest request, Model model) {
 
         //세션 관리자에 저장된 회원 정보 조회
@@ -51,6 +53,27 @@ public class HomeController {
         if (member == null) {
             return "home";
         }
+        model.addAttribute("member", member);
+        return "loginHome";
+    }
+
+    @GetMapping("/")
+    public String homeLoginV3(HttpServletRequest request, Model model) {
+
+        //세션이 없으면 home
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return "home";
+        }
+
+        //로그인
+        Member member = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);
+        //세션에 회원 데이터 없으면  home
+        if (member == null) {
+            return "home";
+        }
+        
+        //세션이 유지되면 로그인으로 이동
         model.addAttribute("member", member);
         return "loginHome";
     }
